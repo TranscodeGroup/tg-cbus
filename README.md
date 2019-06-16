@@ -1,2 +1,2 @@
 # tg-cbus
-CityBus 公交公用库
+公交专用库
