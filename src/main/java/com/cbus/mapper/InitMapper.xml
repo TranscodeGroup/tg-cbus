@@ -12,6 +12,8 @@
         <result property="cid" column="cid"/>
         <result property="vue" column="vue"/>
         <result property="path" column="path"/>
+        <result property="hide" column="hide"/>
+        <result property="closable" column="closable"/>
         <result property="opt" column="opt"/>
         <result property="perm" column="perm"/>
         

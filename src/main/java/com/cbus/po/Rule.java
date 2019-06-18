@@ -30,6 +30,8 @@ public class Rule {
     }
 
     public String getPrefix() {
+        if (prefix != null)
+            prefix = prefix.trim();
         return prefix;
     }
 
@@ -46,6 +48,8 @@ public class Rule {
     }
 
     public String getRemark() {
+        if (remark != null)
+            remark = remark.trim();
         return remark;
     }
 

@@ -40,6 +40,8 @@ public class ModelAndPerm {
     private int perm;
     // 是否隐藏
     private int hide;
+    // 是否可关闭
+    private int closable;
 
     // 关联的数据集 数组格式 个别窗口可能拥有多个数据集
     private List<ModelDataset> dsids;
@@ -116,6 +118,14 @@ public class ModelAndPerm {
 
     public void setHide(int hide) {
         this.hide = hide;
+    }
+
+    public int getClosable() {
+        return closable;
+    }
+
+    public void setClosable(int closable) {
+        this.closable = closable;
     }
 
     public List<ModelDataset> getDsids() {

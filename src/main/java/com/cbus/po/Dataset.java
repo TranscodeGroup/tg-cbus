@@ -37,6 +37,8 @@ public class Dataset {
     }
 
     public String getModid() {
+        if (modid != null)
+            modid = modid.trim();
         return modid;
     }
 
@@ -53,6 +55,8 @@ public class Dataset {
     }
 
     public String getTitle() {
+        if (title != null)
+            title = title.trim();
         return title;
     }
 

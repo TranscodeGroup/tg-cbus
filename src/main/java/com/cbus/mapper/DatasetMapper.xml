@@ -25,5 +25,33 @@
         </if>
     </select>
     
+        <!-- 更新数据 -->
+    <update id="updateRecord" parameterType="com.cbus.po.DatasetVo">
+        update t_dataset 
+        <set>
+          <if test="modid !=null">
+            modid = #{modid},
+          </if>
+          <if test="title != null">
+            title = #{title},
+          </if>
+          <if test="dtype != null">
+            dtype = #{dtype},
+          </if>
+          <if test="sorter != null">
+            sorter = #{sorter},
+          </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <insert id="addRecord" parameterType="com.cbus.po.DatasetVo" useGeneratedKeys="true" keyProperty="id">
+        insert into t_dataset (gid, modid, title, dtype, sorter) values 
+          (#{gid}, #{modid}, #{title}, #{dtype}, #{sorter})
+    </insert>
+    
+    <delete id="delRecord" parameterType="com.cbus.po.DatasetVo">
+        delete from t_dataset  where id = #{id}
+    </delete>
     
 </mapper>

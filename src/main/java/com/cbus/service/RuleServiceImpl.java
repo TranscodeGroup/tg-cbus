@@ -20,10 +20,6 @@ public class RuleServiceImpl implements RuleService {
         return ruleMapper.getData(ruleVo);
     }
     
-//    public int getRuleId(String prefix) throws Exception {
-//        return ruleMapper.getRuleId(prefix);
-//    };
-    
     @Override
     public int updateRecord(RuleVo ruleVo) throws Exception {
         return ruleMapper.updateRecord(ruleVo);
@@ -41,8 +37,7 @@ public class RuleServiceImpl implements RuleService {
 
     @Override
     public int getRuleId(String prefix) throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
+        return ruleMapper.getRuleId(prefix);
     }
 
 }

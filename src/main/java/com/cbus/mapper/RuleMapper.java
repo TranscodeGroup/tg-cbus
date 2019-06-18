@@ -38,4 +38,12 @@ public interface RuleMapper {
      */
     public int delRecord(RuleVo ruleVo) throws Exception;
     
+    /**
+     * 根据前缀获取编码值
+     * @param prefix
+     * @return
+     * @throws Exception
+     */
+    public int getRuleId(String prefix) throws Exception;
+    
 }

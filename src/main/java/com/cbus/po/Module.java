@@ -25,10 +25,12 @@ public class Module {
     private String vue;
     // 是否隐藏 0=否 1=是
     private Integer hide;
+    // 菜单是否可关闭 0=否 1=是 默认1
+    private Integer closable;
     // 备注
     private String remark;
     // 排序
-    private int sortid;
+    private Integer sortid;
 
     public Integer getId() {
         return id;
@@ -47,6 +49,8 @@ public class Module {
     }
 
     public String getPid() {
+        if (pid != null)
+            pid = pid.trim();
         return pid;
     }
 
@@ -71,6 +75,8 @@ public class Module {
     }
 
     public String getIcon() {
+        if (icon != null)
+            icon = icon.trim();
         return icon;
     }
 
@@ -79,6 +85,8 @@ public class Module {
     }
 
     public String getPath() {
+        if (path != null)
+            path = path.trim();
         return path;
     }
 
@@ -87,6 +95,8 @@ public class Module {
     }
 
     public String getVue() {
+        if (vue != null)
+            vue = vue.trim();
         return vue;
     }
 
@@ -98,11 +108,21 @@ public class Module {
         return hide;
     }
 
-    public void setHide(int hide) {
+    public void setHide(Integer hide) {
         this.hide = hide;
     }
 
+    public Integer getClosable() {
+        return closable;
+    }
+
+    public void setClosable(Integer closable) {
+        this.closable = closable;
+    }
+
     public String getRemark() {
+        if (remark != null)
+            remark = remark.trim();
         return remark;
     }
 
