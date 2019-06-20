@@ -225,6 +225,22 @@ public class RedisTokenManager {
      */
     public String encodeToken(String token, String skey) {
         String ret = token.toLowerCase();
+        // 简单加密 把明文中的所有数字+1，大于9的=0
+        StringBuilder str = new StringBuilder(ret);
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            // 只处理数字类型
+            if (Character.isDigit(c)) {
+                int x = Integer.parseInt(String.valueOf(c));
+                x++;
+                // 大于9的，转为0
+                if (x > 9)
+                    x = 0;
+                char ch1 = (char) (x + 48);
+                str.setCharAt(i, ch1);
+            }
+        }
+        ret = str.toString();
         byte[] src = this.encodeAES(ret, skey);
         return Base64.getEncoder().encodeToString(src);
     }

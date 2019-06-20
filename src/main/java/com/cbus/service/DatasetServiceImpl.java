@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cbus.mapper.DatasetMapper;
+import com.cbus.mapper.RuleMapper;
 import com.cbus.po.DatasetVo;
 
 @Service
@@ -14,26 +15,33 @@ public class DatasetServiceImpl implements DatasetService {
     @Autowired
     private DatasetMapper datasetMapper;
     
+    @Autowired
+    private RuleMapper ruleMapper;
+    
     @Override
-    public List<DatasetVo> getData(DatasetVo DatasetVo) throws Exception {
-        return datasetMapper.getData(DatasetVo);
+    public List<DatasetVo> getData(DatasetVo datasetVo) throws Exception {
+        return datasetMapper.getData(datasetVo);
     }
     
     @Override
-    public int delRecord(DatasetVo DatasetVo) throws Exception {
-        return datasetMapper.delRecord(DatasetVo);
+    public int delRecord(DatasetVo datasetVo) throws Exception {
+        return datasetMapper.delRecord(datasetVo);
     }
 
 
     @Override
-    public int updateRecord(DatasetVo DatasetVo) throws Exception {
-        return datasetMapper.updateRecord(DatasetVo);
+    public int updateRecord(DatasetVo datasetVo) throws Exception {
+        return datasetMapper.updateRecord(datasetVo);
     }
 
 
     @Override
-    public int addRecord(DatasetVo DatasetVo) throws Exception {
-        return datasetMapper.addRecord(DatasetVo);
+    public int addRecord(DatasetVo datasetVo) throws Exception {
+        String val = "DST";
+        int id = ruleMapper.getRuleId(val);
+        val = String.format("DST%06d", id);
+        datasetVo.setGid(val);
+        return datasetMapper.addRecord(datasetVo);
     }
 
     @Override
