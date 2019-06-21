@@ -47,7 +47,7 @@ public class RedisTokenManager {
     private int app_session_timeout;
     
     // 请求超时时间
-    private int URL_REQUEST_TIMEOUT = 300;
+    private int URL_REQUEST_TIMEOUT = 600;
     
     private String TOKEN_BUS = "TOKEN:BUS";
     
