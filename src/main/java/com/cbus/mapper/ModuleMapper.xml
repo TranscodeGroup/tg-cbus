@@ -38,4 +38,48 @@
         </if>
     </select>
     
+    <insert id="addRecord" parameterType="com.cbus.po.ModuleVo" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_module 
+            (gid, pid, icon, path, hide, vue, remark, opt, sortid)
+        VALUES 
+            (#{gid}, #{pid}, #{icon}, #{path}, #{hide}, #{vue}, #{remark}, #{opt}, #{sortid});
+    </insert>
+   
+    <delete id="delRecord" parameterType="com.cbus.po.ModuleVo">
+        delete from t_module where id = #{id}
+    </delete>
+    
+    <update id="updateRecord" parameterType="com.cbus.po.ModuleVo">
+        update t_module 
+        <set>
+            <if test="gid != null and gid != ''">
+                gid = #{gid},
+            </if>
+            <if test="icon != null and icon != ''">
+                icon = #{icon},
+            </if>
+            <if test="path != null">
+                path = #{path},
+            </if>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="hide != null">
+                hide = #{hide},
+            </if>
+            <if test="vue != null">
+                vue = #{vue},
+            </if>
+            <if test="opt != null">
+                opt = #{opt},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="sortid != null">
+                sortid = #{sortid},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 </mapper>
