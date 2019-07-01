@@ -104,7 +104,7 @@ public class Module {
         this.vue = vue;
     }
 
-    public int getHide() {
+    public Integer getHide() {
         return hide;
     }
 
