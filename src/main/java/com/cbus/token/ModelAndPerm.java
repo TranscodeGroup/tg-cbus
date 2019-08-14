@@ -25,6 +25,8 @@ public class ModelAndPerm {
     private String vue;
     // path
     private String path;
+    // 模块关联的url
+    private String url;
     // 可用权限 按位运算 4字节 低位在前 低2个字节系统使用 高2个字节自定义
     // 00000000 00000000 00000000 00000000 0 无
     // 00000000 00000000 00000000 00000001 1 可读
@@ -94,6 +96,14 @@ public class ModelAndPerm {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public int getOpt() {
