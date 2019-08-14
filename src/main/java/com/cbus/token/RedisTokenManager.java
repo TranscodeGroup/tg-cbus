@@ -25,61 +25,58 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import com.cbus.exception.TgException;
+import com.cbus.utils.TgCode;
 import com.s3.po.CodeData;
 import com.s3.utils.JsonUtils;
 import com.s3.utils.TGCode;
 import com.s3.utils.ToolUtils;
 
-
 @Component
 public class RedisTokenManager {
-    
+
     /**
-     * key的生命周期  默认1800秒
+     * key的生命周期 默认1800秒
      */
     @Value("${web.session.timeout:1800}")
     private int web_session_timeout;
-    
+
     /**
-     * key的生命周期  默认7200秒
+     * key的生命周期 默认7200秒
      */
     @Value("${app.session.timeout:1800}")
     private int app_session_timeout;
-    
+
     // 请求超时时间
     private int URL_REQUEST_TIMEOUT = 600;
-    
+
     private String TOKEN_BUS = "TOKEN:BUS";
-    
-//    Key类型操作
-//    ValueOperations Redis String/Value 操作
-//    ListOperations  Redis List 操作
-//    SetOperations   Redis Set 操作
-//    ZSetOperations  Redis Sort Set 操作
-//    HashOperations  Redis Hash 操作
-//    Value约束操作
-//    BoundValueOperations    Redis String/Value key 约束
-//    BoundListOperations Redis List key 约束
-//    BoundSetOperations  Redis Set key 约束
-//    BoundZSetOperations Redis Sort Set key 约束
-//    BoundHashOperations Redis Hash key 约束
-    
-    
-    @Resource(name="redisStringTemplate")
-    //private HashOperations<String, String, TokenModel> listOps;
+
+    // Key类型操作
+    // ValueOperations Redis String/Value 操作
+    // ListOperations Redis List 操作
+    // SetOperations Redis Set 操作
+    // ZSetOperations Redis Sort Set 操作
+    // HashOperations Redis Hash 操作
+    // Value约束操作
+    // BoundValueOperations Redis String/Value key 约束
+    // BoundListOperations Redis List key 约束
+    // BoundSetOperations Redis Set key 约束
+    // BoundZSetOperations Redis Sort Set key 约束
+    // BoundHashOperations Redis Hash key 约束
+
+    @Resource(name = "redisStringTemplate")
+    // private HashOperations<String, String, TokenModel> listOps;
     private ValueOperations<String, String> valOps;
-    
-    @Resource(name="redisStringTemplate")
+
+    @Resource(name = "redisStringTemplate")
     private RedisTemplate<String, String> redisTemplate;
-    
+
     @Resource(name = "redisStringTemplate")
     private HashOperations<String, String, String> serverlistOps;
-    
+
     /**
-     * 获取Token
-     * @param key
-     * @return
-     * @throws  
+     * 获取Token @param key @return @throws
      */
     public TokenModel getTokenModel(String key) {
         String data = valOps.get(key);
@@ -88,24 +85,26 @@ public class RedisTokenManager {
             int time = app_session_timeout;
             redisTemplate.expire(key, time, TimeUnit.SECONDS);
             return JsonUtils.str2Obj(data, TokenModel.class);
-        } else 
+        } else
             return null;
     }
-    
+
     /**
      * 创建Token，一般在一个用户login时创建
+     * 
      * @param hash
      * @param hk
      * @param value
      */
     public void setTokenModel(String key, TokenModel value) {
         int time = app_session_timeout;
-        
+
         valOps.set(key, JsonUtils.obj2Str(value), time, TimeUnit.SECONDS);
     }
-    
+
     /**
      * 删除一个token
+     * 
      * @param hash
      * @param hk
      */
@@ -115,6 +114,7 @@ public class RedisTokenManager {
 
     /**
      * 返回tokey值
+     * 
      * @param key
      * @return
      */
@@ -122,12 +122,13 @@ public class RedisTokenManager {
         TokenModel tm = getTokenModel(key);
         if (tm == null)
             return null;
-        else 
+        else
             return tm.getToken();
     }
-    
+
     /**
      * 通过用户id获取token信息
+     * 
      * @param gid
      * @return 失败返回 list<> 空列表 同一用户多次login时，会出现多笔记录
      */
@@ -135,7 +136,7 @@ public class RedisTokenManager {
         List<TokenModel> ret = new ArrayList<TokenModel>();
         if (uid == null || "".equals(uid))
             return ret;
-        Set<String> keyset = redisTemplate.keys(TOKEN_BUS + ":*");  
+        Set<String> keyset = redisTemplate.keys(TOKEN_BUS + ":*");
         List<String> list = valOps.multiGet(keyset);
         for (int i = 0; i < list.size(); i++) {
             TokenModel tm = JsonUtils.str2Obj(list.get(i), TokenModel.class);
@@ -145,82 +146,78 @@ public class RedisTokenManager {
         }
         return ret;
     }
-    
-    
-    /** 
-     * 加密  128位
-     * @param content 需要加密的内容 
-     * @param skey    加密密码 不够16位 在后边补 0x00
-     * @return 
-     * @throws  
-     */  
-    public byte[] encodeAES(String content, String skey) {  
+
+    /**
+     * 加密 128位 @param content 需要加密的内容 @param skey 加密密码 不够16位 在后边补 0x00 @return @throws
+     */
+    public byte[] encodeAES(String content, String skey) {
         try {
             byte[] keybyte = Arrays.copyOf(skey.getBytes("utf-8"), 16);
             SecretKeySpec key = new SecretKeySpec(keybyte, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-            //使用CBC模式，需要一个向量iv，可增加加密算法的强度  ECB不需以下这行
+            // 使用CBC模式，需要一个向量iv，可增加加密算法的强度 ECB不需以下这行
             IvParameterSpec iv = new IvParameterSpec("0192939495969798".getBytes());
             cipher.init(Cipher.ENCRYPT_MODE, key, iv);
             byte[] result = cipher.doFinal(content.getBytes("utf-8"));
             return result;
-            
-        } catch (NoSuchAlgorithmException e) {  
-            e.printStackTrace();  
-        } catch (NoSuchPaddingException e) {  
-            e.printStackTrace();  
-        } catch (InvalidKeyException e) {  
-            e.printStackTrace();  
-        } catch (UnsupportedEncodingException e) {  
-            e.printStackTrace();  
-        } catch (IllegalBlockSizeException e) {  
-            e.printStackTrace();  
-        } catch (BadPaddingException e) {  
-           e.printStackTrace();  
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
         }
         return null;
-    }  
-    
+    }
+
     /**
-     * 解密  128位
-     * @param content  待解密内容 
-     * @param skey     解密密钥  不够16位 在后边补 0x00
-     * @return 
-     */  
+     * 解密 128位
+     * 
+     * @param content
+     *            待解密内容
+     * @param skey
+     *            解密密钥 不够16位 在后边补 0x00
+     * @return
+     */
     public byte[] decodeAES(byte[] content, String skey) {
         try {
             SecretKeySpec key = new SecretKeySpec(Arrays.copyOf(skey.getBytes("utf-8"), 16), "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             // CBC需要iv，ECB不需要
-            IvParameterSpec iv = new IvParameterSpec("0192939495969798".getBytes());  
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);// 初始化  
-            byte[] result = cipher.doFinal(content);  
-            return result; // 加密  
-        } catch (NoSuchAlgorithmException e) {  
-            e.printStackTrace();  
-        } catch (NoSuchPaddingException e) {  
-            e.printStackTrace();  
-        } catch (InvalidKeyException e) {  
-            e.printStackTrace();  
-        } catch (IllegalBlockSizeException e) {  
-            e.printStackTrace();  
-        } catch (BadPaddingException e) {  
-            e.printStackTrace();  
+            IvParameterSpec iv = new IvParameterSpec("0192939495969798".getBytes());
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);// 初始化
+            byte[] result = cipher.doFinal(content);
+            return result; // 加密
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
-        }  
-        return null;  
+        }
+        return null;
     }
-    
+
     /**
-     * 编码token
-     * 规则 将token进行aes加密, 最后转为base64
-     * AES/CBC/PKCS5Padding PKCS5Padding的补码方式，其实就是PKCS7
-     * iv=0192939495969798
+     * 编码token 规则 将token进行aes加密, 最后转为base64 AES/CBC/PKCS5Padding PKCS5Padding的补码方式，其实就是PKCS7 iv=0192939495969798
+     * 
      * @return
      */
     public String encodeToken(String token, String skey) {
@@ -236,7 +233,7 @@ public class RedisTokenManager {
                 // 大于9的，转为0
                 if (x > 9)
                     x = 0;
-                char ch1 = (char) (x + 48);
+                char ch1 = (char)(x + 48);
                 str.setCharAt(i, ch1);
             }
         }
@@ -244,9 +241,10 @@ public class RedisTokenManager {
         byte[] src = this.encodeAES(ret, skey);
         return Base64.getEncoder().encodeToString(src);
     }
-    
+
     /**
      * 计算url签名
+     * 
      * @param uid
      * @param token
      * @param time
@@ -256,10 +254,10 @@ public class RedisTokenManager {
         String str = "time=" + time + "&token=" + token + "&uid=" + uid;
         return ToolUtils.md5(str);
     }
-    
-    
+
     /**
      * 判断token是否合法
+     * 
      * @param uid
      * @param time
      * @return
@@ -290,12 +288,13 @@ public class RedisTokenManager {
         cd.setMsg("ok");
         return ret;
     }
-    
+
     /**
      * 判断是否有数据集权限
+     * 
      * @param tm
      * @param modid
-     * @param perm 
+     * @param perm
      * @return 0=无权限 1=有权限
      */
     public int hasPermission(TokenModel tm, String modid, int perm) {
@@ -314,10 +313,40 @@ public class RedisTokenManager {
                     ret = 0;
                 }
                 break;
-            } 
+            }
         }
-        
+
         return ret;
     }
-    
+
+    /**
+     * 判断token是否合法
+     * 
+     * @param uid
+     * @param time
+     * @return
+     */
+    public TokenModel verifyToken(String uid, String time, String sign) {
+        // 判断时间是否过期
+        if (time == null || time.length() == 0) {
+            throw new TgException(TgCode.CODE_ERROR_TIMESTAMP);
+        }
+        long curTime = System.currentTimeMillis() / 1000;
+        long tz = Long.valueOf(time).longValue();
+        if (Math.abs(curTime - tz) > this.URL_REQUEST_TIMEOUT) {
+            throw new TgException(TgCode.CODE_ERROR_TIMESTAMP);
+        }
+        // 获取token
+        TokenModel ret = this.getTokenModel(this.TOKEN_BUS + ":" + uid);
+        if (ret == null) {
+            throw new TgException(TgCode.CODE_ERROR_TOKEN);
+        }
+        // 判断签名
+        String newSign = signUrl(uid, ret.getToken(), String.valueOf(time));
+        if (!newSign.equalsIgnoreCase(sign)) {
+            throw new TgException(TgCode.CODE_ERROR_URLSIGN);
+        }
+        return ret;
+    }
+
 }
