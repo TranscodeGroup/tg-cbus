@@ -35,6 +35,7 @@ import com.s3.utils.ToolUtils;
 
 /**
  * 身份信息管理类
+ * 
  * @author zhen.lin
  * @date 2019年8月14日
  */
@@ -68,8 +69,7 @@ public class RedisTokenManager {
     // BoundHashOperations Redis Hash key 约束
 
     // private HashOperations<String, String, TokenModel> listOps;
-    
-    
+
     @Resource(name = "redisStringTemplate")
     private ValueOperations<String, String> valOps;
 
@@ -155,7 +155,8 @@ public class RedisTokenManager {
     }
 
     /**
-     * 加密 128位 @param content 需要加密的内容 @param skey 加密密码 不够16位 在后边补 0x00 @return @throws
+     * 加密 128位 @param content 需要加密的内容 @param skey 加密密码 不够16位 在后边补
+     * 0x00 @return @throws
      */
     public byte[] encodeAES(String content, String skey) {
         try {
@@ -225,7 +226,8 @@ public class RedisTokenManager {
     }
 
     /**
-     * 编码token 规则 将token进行aes加密, 最后转为base64 AES/CBC/PKCS5Padding PKCS5Padding的补码方式，其实就是PKCS7 iv=0192939495969798
+     * 编码token 规则 将token进行aes加密, 最后转为base64 AES/CBC/PKCS5Padding
+     * PKCS5Padding的补码方式，其实就是PKCS7 iv=0192939495969798
      * 
      * @return
      */
@@ -243,7 +245,7 @@ public class RedisTokenManager {
                 if (x > 9) {
                     x = 0;
                 }
-                char ch1 = (char)(x + 48);
+                char ch1 = (char) (x + 48);
                 str.setCharAt(i, ch1);
             }
         }
@@ -338,32 +340,31 @@ public class RedisTokenManager {
      * @param time
      * @return
      */
-    public TokenModel verifyToken(String uid, String time, String sign) {
+    public TokenModel verifyToken(TgAuth auth) {
         // 判断时间是否过期
-        if (time == null || time.length() == 0) {
-            throw new TgException(TgCode.CODE_ERROR_TIMESTAMP);
-        }
         long curTime = System.currentTimeMillis() / 1000;
-        long tz = Long.valueOf(time).longValue();
+        long tz = Long.valueOf(auth.getTime()).longValue();
         if (Math.abs(curTime - tz) > URL_REQUEST_TIMEOUT) {
             throw new TgException(TgCode.CODE_ERROR_TIMESTAMP);
         }
         // 获取token
-        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + uid);
+        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + auth.getUid());
         if (ret == null) {
             throw new TgException(TgCode.CODE_ERROR_TOKEN);
         }
         // 判断签名
-        String newSign = signUrl(uid, ret.getToken(), String.valueOf(time));
-        if (!newSign.equalsIgnoreCase(sign)) {
+        String newSign = signUrl(auth.getUid(), ret.getToken(), String.valueOf(auth.getTime()));
+        if (!newSign.equalsIgnoreCase(auth.getSign())) {
             throw new TgException(TgCode.CODE_ERROR_URLSIGN);
         }
         return ret;
     }
-    
+
     /**
      * 将http请求头中的身份信息转为对象 base64编码
-     * @param baseStr 格式 = Basic eyJ1aWQiOiJjOTNiMmIwOTBhYT...
+     * 
+     * @param baseStr
+     *            格式 = Basic eyJ1aWQiOiJjOTNiMmIwOTBhYT...
      * @return
      */
     public TgAuth base2Auth(String baseStr) {
@@ -379,7 +380,6 @@ public class RedisTokenManager {
         // base64解码
         byte[] bData = Base64.getDecoder().decode(baseStr);
         String sData = new String(bData);
-        System.out.println(sData);
         return JsonUtils.str2Obj(sData, TgAuth.class);
     }
 
