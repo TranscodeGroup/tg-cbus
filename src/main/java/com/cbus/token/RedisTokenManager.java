@@ -26,31 +26,33 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import com.cbus.exception.TgException;
+import com.cbus.po.param.TgAuth;
 import com.cbus.utils.TgCode;
 import com.s3.po.CodeData;
 import com.s3.utils.JsonUtils;
 import com.s3.utils.TGCode;
 import com.s3.utils.ToolUtils;
 
+/**
+ * 身份信息管理类
+ * @author zhen.lin
+ * @date 2019年8月14日
+ */
 @Component
 public class RedisTokenManager {
-
-    /**
-     * key的生命周期 默认1800秒
-     */
-    @Value("${web.session.timeout:1800}")
-    private int web_session_timeout;
 
     /**
      * key的生命周期 默认7200秒
      */
     @Value("${app.session.timeout:1800}")
-    private int app_session_timeout;
+    private int appSessionTimeout;
 
-    // 请求超时时间
-    private int URL_REQUEST_TIMEOUT = 600;
+    /**
+     * 请求超时时间
+     */
+    private static int URL_REQUEST_TIMEOUT = 600;
 
-    private String TOKEN_BUS = "TOKEN:BUS";
+    private static String TOKEN_BUS = "TOKEN:BUS";
 
     // Key类型操作
     // ValueOperations Redis String/Value 操作
@@ -65,8 +67,10 @@ public class RedisTokenManager {
     // BoundZSetOperations Redis Sort Set key 约束
     // BoundHashOperations Redis Hash key 约束
 
-    @Resource(name = "redisStringTemplate")
     // private HashOperations<String, String, TokenModel> listOps;
+    
+    
+    @Resource(name = "redisStringTemplate")
     private ValueOperations<String, String> valOps;
 
     @Resource(name = "redisStringTemplate")
@@ -82,11 +86,12 @@ public class RedisTokenManager {
         String data = valOps.get(key);
         if (data != null) {
             // 更新过期时间
-            int time = app_session_timeout;
+            int time = this.appSessionTimeout;
             redisTemplate.expire(key, time, TimeUnit.SECONDS);
             return JsonUtils.str2Obj(data, TokenModel.class);
-        } else
+        } else {
             return null;
+        }
     }
 
     /**
@@ -97,7 +102,7 @@ public class RedisTokenManager {
      * @param value
      */
     public void setTokenModel(String key, TokenModel value) {
-        int time = app_session_timeout;
+        int time = this.appSessionTimeout;
 
         valOps.set(key, JsonUtils.obj2Str(value), time, TimeUnit.SECONDS);
     }
@@ -120,10 +125,11 @@ public class RedisTokenManager {
      */
     public String getToken(String key) {
         TokenModel tm = getTokenModel(key);
-        if (tm == null)
+        if (tm == null) {
             return null;
-        else
+        } else {
             return tm.getToken();
+        }
     }
 
     /**
@@ -134,8 +140,9 @@ public class RedisTokenManager {
      */
     public List<TokenModel> getTokenModelByUid(String uid) {
         List<TokenModel> ret = new ArrayList<TokenModel>();
-        if (uid == null || "".equals(uid))
+        if (uid == null || "".equals(uid)) {
             return ret;
+        }
         Set<String> keyset = redisTemplate.keys(TOKEN_BUS + ":*");
         List<String> list = valOps.multiGet(keyset);
         for (int i = 0; i < list.size(); i++) {
@@ -194,9 +201,11 @@ public class RedisTokenManager {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             // CBC需要iv，ECB不需要
             IvParameterSpec iv = new IvParameterSpec("0192939495969798".getBytes());
-            cipher.init(Cipher.DECRYPT_MODE, key, iv);// 初始化
+            // 初始化
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
             byte[] result = cipher.doFinal(content);
-            return result; // 加密
+            // 加密
+            return result;
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -231,8 +240,9 @@ public class RedisTokenManager {
                 int x = Integer.parseInt(String.valueOf(c));
                 x++;
                 // 大于9的，转为0
-                if (x > 9)
+                if (x > 9) {
                     x = 0;
+                }
                 char ch1 = (char)(x + 48);
                 str.setCharAt(i, ch1);
             }
@@ -265,13 +275,13 @@ public class RedisTokenManager {
     public TokenModel verifyToken(String uid, long time, String sign, CodeData cd) {
         // 判断时间是否过期
         long curTime = System.currentTimeMillis() / 1000;
-        if (Math.abs(curTime - time) > this.URL_REQUEST_TIMEOUT) {
+        if (Math.abs(curTime - time) > URL_REQUEST_TIMEOUT) {
             cd.setMsg("error timestamp");
             cd.setCode(TGCode.CODE_ERROR_TIMESTAMP);
             return null;
         }
         // 获取token
-        TokenModel ret = this.getTokenModel(this.TOKEN_BUS + ":" + uid);
+        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + uid);
         if (ret == null) {
             cd.setCode(TGCode.CODE_ERROR_KEY);
             cd.setMsg("error key");
@@ -298,11 +308,13 @@ public class RedisTokenManager {
      * @return 0=无权限 1=有权限
      */
     public int hasPermission(TokenModel tm, String modid, int perm) {
-        if (tm == null)
+        if (tm == null) {
             return 0;
+        }
         List<ModelAndPerm> list = tm.getPerm();
-        if (list == null)
+        if (list == null) {
             return 0;
+        }
         int ret = 0;
         for (int i = 0; i < list.size(); i++) {
             ModelAndPerm uperm = list.get(i);
@@ -333,11 +345,11 @@ public class RedisTokenManager {
         }
         long curTime = System.currentTimeMillis() / 1000;
         long tz = Long.valueOf(time).longValue();
-        if (Math.abs(curTime - tz) > this.URL_REQUEST_TIMEOUT) {
+        if (Math.abs(curTime - tz) > URL_REQUEST_TIMEOUT) {
             throw new TgException(TgCode.CODE_ERROR_TIMESTAMP);
         }
         // 获取token
-        TokenModel ret = this.getTokenModel(this.TOKEN_BUS + ":" + uid);
+        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + uid);
         if (ret == null) {
             throw new TgException(TgCode.CODE_ERROR_TOKEN);
         }
@@ -347,6 +359,28 @@ public class RedisTokenManager {
             throw new TgException(TgCode.CODE_ERROR_URLSIGN);
         }
         return ret;
+    }
+    
+    /**
+     * 将http请求头中的身份信息转为对象 base64编码
+     * @param baseStr 格式 = Basic eyJ1aWQiOiJjOTNiMmIwOTBhYT...
+     * @return
+     */
+    public TgAuth base2Auth(String baseStr) {
+        // 将base64的字符串转为TgAuth结构
+        if (null == baseStr) {
+            return null;
+        }
+        // 跳掉头部 Basic
+        int i = baseStr.indexOf("Basic ");
+        if (i != -1) {
+            baseStr = baseStr.substring(6, baseStr.length());
+        }
+        // base64解码
+        byte[] bData = Base64.getDecoder().decode(baseStr);
+        String sData = new String(bData);
+        System.out.println(sData);
+        return JsonUtils.str2Obj(sData, TgAuth.class);
     }
 
 }
