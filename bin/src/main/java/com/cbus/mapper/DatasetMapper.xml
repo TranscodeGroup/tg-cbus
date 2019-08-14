@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="com.cbus.mapper.DatasetMapper">
+
+    
+    <select id="getData" parameterType="com.cbus.po.DatasetVo" resultType="com.cbus.po.DatasetVo"> 
+        SELECT
+            t1.*
+        FROM
+            t_dataset t1
+        <where>
+            <if test="id != null">
+                and t1.id = #{id}
+            </if>
+            <if test="gid != null and gid !=''">
+                and t1.gid = #{gid}
+            </if>
+            <if test="modid != null and modid !=''">
+                and t1.modid = #{modid}
+            </if>
+        </where>
+        <if test="orderby != null and orderby !=''">
+            order by ${orderby}
+        </if>
+    </select>
+    
+        <!-- 更新数据 -->
+    <update id="updateRecord" parameterType="com.cbus.po.DatasetVo">
+        update t_dataset 
+        <set>
+          <if test="modid !=null">
+            modid = #{modid},
+          </if>
+          <if test="title != null">
+            title = #{title},
+          </if>
+          <if test="dtype != null">
+            dtype = #{dtype},
+          </if>
+          <if test="sorter != null">
+            sorter = #{sorter},
+          </if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <insert id="addRecord" parameterType="com.cbus.po.DatasetVo" useGeneratedKeys="true" keyProperty="id">
+        insert into t_dataset (gid, modid, title, dtype, sorter) values 
+          (#{gid}, #{modid}, #{title}, #{dtype}, #{sorter})
+    </insert>
+    
+    <delete id="delRecord" parameterType="com.cbus.po.DatasetVo">
+        delete from t_dataset  where id = #{id}
+    </delete>
+    
+</mapper>
