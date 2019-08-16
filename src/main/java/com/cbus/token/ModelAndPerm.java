@@ -45,8 +45,6 @@ public class ModelAndPerm {
     // 是否可关闭
     private int closable;
 
-    // 关联的数据集 数组格式 个别窗口可能拥有多个数据集
-    private List<ModelDataset> dsids;
     // 子节点
     private List<ModelAndPerm> children;
 
@@ -136,14 +134,6 @@ public class ModelAndPerm {
 
     public void setClosable(int closable) {
         this.closable = closable;
-    }
-
-    public List<ModelDataset> getDsids() {
-        return dsids;
-    }
-
-    public void setDsids(List<ModelDataset> dsids) {
-        this.dsids = dsids;
     }
 
     public List<ModelAndPerm> getChildren() {

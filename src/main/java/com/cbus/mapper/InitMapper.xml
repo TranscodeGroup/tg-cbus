@@ -18,12 +18,13 @@
         <result property="opt" column="opt"/>
         <result property="perm" column="perm"/>
         
-        <!-- 级联查询 一对多 -->
+        <!-- 级联查询 一对多 
         <collection property="dsids" ofType="com.cbus.token.ModelDataset">
             <id property="id" column="t2_id"/>
             <result property="dsid" column="dsid"/>
             <result property="dtype" column="dtype"/>
         </collection>
+        -->
     </resultMap>
     
     <select id="Initialize" parameterType="string" statementType="CALLABLE" resultMap="ModelAndPerm"> 

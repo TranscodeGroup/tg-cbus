@@ -45,4 +45,7 @@ public interface TGConst {
      * 权限 取消
      */
     int PERM_CANCEL = 128;
+    
+    String ATTR_TOKEN_MODEL = "TOKEN_MODEL";
+    String ATTR_CODE_DATA = "CODE_DATA";
 }
