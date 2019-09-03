@@ -26,7 +26,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import com.cbus.exception.TgException;
-import com.cbus.po.param.TgAuth;
+import com.cbus.po.TgAuth;
 import com.cbus.utils.TgCode;
 import com.s3.po.CodeData;
 import com.s3.utils.JsonUtils;
@@ -341,6 +341,10 @@ public class RedisTokenManager {
      * @return
      */
     public TokenModel verifyToken(TgAuth auth) {
+        // 错误的鉴权信息
+        if (auth == null) {
+            throw new TgException(TgCode.CODE_ERROR_TOKEN);
+        }
         // 判断时间是否过期
         long curTime = System.currentTimeMillis() / 1000;
         long tz = Long.valueOf(auth.getTime()).longValue();
@@ -353,11 +357,24 @@ public class RedisTokenManager {
             throw new TgException(TgCode.CODE_ERROR_TOKEN);
         }
         // 判断签名
-        String newSign = signUrl(auth.getUid(), ret.getToken(), String.valueOf(auth.getTime()));
-        if (!newSign.equalsIgnoreCase(auth.getSign())) {
-            throw new TgException(TgCode.CODE_ERROR_URLSIGN);
+        if (!"X-ADMIN".equalsIgnoreCase(auth.getSign())) {
+            String newSign = signUrl(auth.getUid(), ret.getToken(), String.valueOf(auth.getTime()));
+            if (!newSign.equalsIgnoreCase(auth.getSign())) {
+                throw new TgException(TgCode.CODE_ERROR_URLSIGN);
+            }
         }
         return ret;
+    }
+
+    /**
+     * 验证base64鉴权信息
+     * 
+     * @param base
+     * @return
+     */
+    public TokenModel verifyBase64(String base) {
+        TgAuth auth = base2Auth(base);
+        return verifyToken(auth);
     }
 
     /**

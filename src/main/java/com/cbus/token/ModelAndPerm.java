@@ -26,7 +26,7 @@ public class ModelAndPerm {
     // path
     private String path;
     // 模块关联的url
-    private String url;
+    private String api;
     // 可用权限 按位运算 4字节 低位在前 低2个字节系统使用 高2个字节自定义
     // 00000000 00000000 00000000 00000000 0 无
     // 00000000 00000000 00000000 00000001 1 可读
@@ -42,11 +42,8 @@ public class ModelAndPerm {
     private int perm;
     // 是否隐藏
     private int hide;
-    // 是否可关闭
-    private int closable;
-
-    // 关联的数据集 数组格式 个别窗口可能拥有多个数据集
-    private List<ModelDataset> dsids;
+    // 标题
+    private String title;
     // 子节点
     private List<ModelAndPerm> children;
 
@@ -98,14 +95,6 @@ public class ModelAndPerm {
         this.path = path;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public int getOpt() {
         return opt;
     }
@@ -129,29 +118,29 @@ public class ModelAndPerm {
     public void setHide(int hide) {
         this.hide = hide;
     }
-
-    public int getClosable() {
-        return closable;
-    }
-
-    public void setClosable(int closable) {
-        this.closable = closable;
-    }
-
-    public List<ModelDataset> getDsids() {
-        return dsids;
-    }
-
-    public void setDsids(List<ModelDataset> dsids) {
-        this.dsids = dsids;
-    }
-
+   
     public List<ModelAndPerm> getChildren() {
         return children;
     }
 
     public void setChildren(List<ModelAndPerm> children) {
         this.children = children;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getApi() {
+        return api;
+    }
+
+    public void setApi(String api) {
+        this.api = api;
     }
 
 }

@@ -2,6 +2,9 @@ package com.cbus.token;
 
 import java.util.List;
 
+import com.cbus.utils.TgRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 用户认证信息
  * 
@@ -9,27 +12,51 @@ import java.util.List;
  * @date 2019年4月28日
  */
 public class TokenModel {
-
-    // 用户id
-    private String uid;
-    // 账号
-    private String account;
-    // 名称
-    private String title;
-    // cid
-    private String cid;
-    // key
-    private String key;
-    // 身份token
-    private String token;
-    // 是否管理 0=普通用户 1=企业管理 100=超管
-    private int ismgr;
-    // login 时间
-    private long time;
-    // login ip
+    /**
+     * 登陆IP
+     */
     private String ip;
-    // 权限
+    /**
+     * 用户id
+     */
+    private String uid;
+    /**
+     * 账号
+     */
+    private String account;
+    /**
+     * 昵称
+     */
+    private String title;
+    /**
+     * 当前选中企业编码,默认为用户归属企业编码
+     */
+    private String cid;
+    /**
+     * 是否管理员 0=普通用户 1=企业管理 100=超管或系统管理员
+     */
+    private int ismgr;
+    /**
+     * 普通用户角色,对应角色表gid
+     */
+    private String roleid;
+    /**
+     * 权限
+     */
     private List<ModelAndPerm> perm;
+
+    /**
+     * key
+     */
+    private String key;
+    /**
+     * token
+     */
+    private String token;
+    /**
+     * 登陆时间
+     */
+    private long time;
 
     public String getUid() {
         return uid;
@@ -109,6 +136,19 @@ public class TokenModel {
 
     public void setPerm(List<ModelAndPerm> perm) {
         this.perm = perm;
+    }
+
+    public String getRoleid() {
+        return roleid;
+    }
+
+    public void setRoleid(String roleid) {
+        this.roleid = roleid;
+    }
+
+    @JsonIgnore
+    public TgRole getTgRole() {
+        return TgRole.getRole(ismgr);
     }
 
 }

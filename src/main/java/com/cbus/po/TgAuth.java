@@ -1,4 +1,4 @@
-package com.cbus.po.param;
+package com.cbus.po;
 
 /**
  * 身份信息结构
