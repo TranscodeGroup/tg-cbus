@@ -302,38 +302,6 @@ public class RedisTokenManager {
     }
 
     /**
-     * 判断是否有数据集权限
-     * 
-     * @param tm
-     * @param modid
-     * @param perm
-     * @return 0=无权限 1=有权限
-     */
-    public int hasPermission(TokenModel tm, String modid, int perm) {
-        if (tm == null) {
-            return 0;
-        }
-        List<ModelAndPerm> list = tm.getPerm();
-        if (list == null) {
-            return 0;
-        }
-        int ret = 0;
-        for (int i = 0; i < list.size(); i++) {
-            ModelAndPerm uperm = list.get(i);
-            if (modid.equals(uperm.getModid())) {
-                if ((perm & uperm.getPerm()) > 0) {
-                    ret = 1;
-                } else {
-                    ret = 0;
-                }
-                break;
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * 判断token是否合法
      * 
      * @param uid

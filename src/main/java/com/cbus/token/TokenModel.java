@@ -1,7 +1,5 @@
 package com.cbus.token;
 
-import java.util.List;
-
 import com.cbus.utils.TgRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,10 +38,6 @@ public class TokenModel {
      * 普通用户角色,对应角色表gid
      */
     private String roleid;
-    /**
-     * 权限
-     */
-    private List<ModelAndPerm> perm;
 
     /**
      * key
@@ -128,14 +122,6 @@ public class TokenModel {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public List<ModelAndPerm> getPerm() {
-        return perm;
-    }
-
-    public void setPerm(List<ModelAndPerm> perm) {
-        this.perm = perm;
     }
 
     public String getRoleid() {
