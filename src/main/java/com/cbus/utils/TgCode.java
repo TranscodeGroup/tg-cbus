@@ -56,6 +56,56 @@ public enum TgCode {
      */
     CODE_ERROR_BUSY(1007, "busy"),
 
+    /**
+     * 用户名或密码错误
+     */
+    CODE_ERROR_PASSWORD(1100, "password error"),
+
+    /**
+     * 正在处理中
+     */
+    CODE_ERROR_PROCESS(1101, "process"),
+
+    /**
+     * 验证码错误
+     */
+    CODE_ERROR_VCODE(1102, "code error"),
+
+    /**
+     * 太频繁操作
+     */
+    CODE_ERROR_OFTEN(1103, "often"),
+
+    /**
+     * 账号不存在
+     */
+    CODE_ERROR_NOACCOUNT(1104, "no account"),
+
+    /**
+     * 邮箱不是账号绑定的邮箱
+     */
+    CODE_ERROR_NOBINDEMAIL(1105, "no binde email"),
+
+    /**
+     * 账号已被注册
+     */
+    CODE_ERROR_HASACCOUNT(1106, "has account"),
+
+    /**
+     * 邮箱已被使用
+     */
+    CODE_ERROR_HASEMAIL(1107, "has email"),
+
+    /**
+     * 账号已登陆
+     */
+    CODE_ERROR_LOGINED(1108, "logined"),
+
+    /**
+     * 账号过期
+     */
+    CODE_ERROR_ACCOUNTEXP(1109, "account exp")
+
     ;
 
     /**

@@ -63,12 +63,5 @@
       <version>2.9.0</version>
     </dependency>
     
-    <!-- 自定义 -->
-    <dependency>
-      <groupId>com.s3</groupId>
-      <artifactId>tg-utils</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    
   </dependencies>
 </project>

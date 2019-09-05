@@ -26,12 +26,11 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import com.cbus.exception.TgException;
+import com.cbus.po.CodeData;
 import com.cbus.po.TgAuth;
+import com.cbus.utils.JsonUtils;
 import com.cbus.utils.TgCode;
-import com.s3.po.CodeData;
-import com.s3.utils.JsonUtils;
-import com.s3.utils.TGCode;
-import com.s3.utils.ToolUtils;
+import com.cbus.utils.ToolUtils;
 
 /**
  * 身份信息管理类
@@ -276,29 +275,30 @@ public class RedisTokenManager {
      */
     public TokenModel verifyToken(String uid, long time, String sign, CodeData cd) {
         // 判断时间是否过期
-        long curTime = System.currentTimeMillis() / 1000;
-        if (Math.abs(curTime - time) > URL_REQUEST_TIMEOUT) {
-            cd.setMsg("error timestamp");
-            cd.setCode(TGCode.CODE_ERROR_TIMESTAMP);
-            return null;
-        }
-        // 获取token
-        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + uid);
-        if (ret == null) {
-            cd.setCode(TGCode.CODE_ERROR_KEY);
-            cd.setMsg("error key");
-            return null;
-        }
-        // 判断签名
-        String newSign = signUrl(uid, ret.getToken(), String.valueOf(time));
-        if (!newSign.equalsIgnoreCase(sign)) {
-            cd.setCode(TGCode.CODE_ERROR_URLSIGN);
-            cd.setMsg("error sign");
-            return null;
-        }
-        cd.setCode(TGCode.CODE_ERROR_NONE);
-        cd.setMsg("ok");
-        return ret;
+//        long curTime = System.currentTimeMillis() / 1000;
+//        if (Math.abs(curTime - time) > URL_REQUEST_TIMEOUT) {
+//            cd.setMsg("error timestamp");
+//            cd.setCode(TgCode.CODE_ERROR_TIMESTAMP);
+//            return null;
+//        }
+//        // 获取token
+//        TokenModel ret = this.getTokenModel(TOKEN_BUS + ":" + uid);
+//        if (ret == null) {
+//            cd.setCode(TgCode.CODE_ERROR_TOKEN);
+//            cd.setMsg("error key");
+//            return null;
+//        }
+//        // 判断签名
+//        String newSign = signUrl(uid, ret.getToken(), String.valueOf(time));
+//        if (!newSign.equalsIgnoreCase(sign)) {
+//            cd.setCode(TgCode.CODE_ERROR_URLSIGN);
+//            cd.setMsg("error sign");
+//            return null;
+//        }
+//        cd.setCode(TgCode.CODE_ERROR_NONE);
+//        cd.setMsg("ok");
+//        return ret;
+        return null;
     }
 
     /**
