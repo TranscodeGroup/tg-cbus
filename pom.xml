@@ -4,7 +4,7 @@
 
   <groupId>com.cbus</groupId>
   <artifactId>tg-cbus</artifactId>
-  <version>1.0.1</version>
+  <version>2.0.4</version>
   <packaging>jar</packaging>
 
   <name>tg-cbus</name>
@@ -64,4 +64,12 @@
     </dependency>
     
   </dependencies>
+  
+  <distributionManagement>
+     <repository>
+       <id>github</id>
+       <name>GitHub OWNER Apache Maven Packages</name>
+       <url>https://maven.pkg.github.com/TranscodeGroup/tg-cbus</url>
+     </repository>
+  </distributionManagement>
 </project>
