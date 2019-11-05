@@ -21,5 +21,7 @@ export-> 勾选
 
 ## 项目发布部署
 run as -> maven build...
+
 在弹出窗口中的 Goals 中输入 deploy
+
 github查看
